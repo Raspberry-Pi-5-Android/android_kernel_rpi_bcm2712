@@ -1,0 +1,13 @@
+source: https://github.com/raspberrypi/linux.git rpi-6.12.y 3163cc5b7c428294db03c4b19260e5c16c626d7a
+release: 6.12.113-v8-4k+
+compiler: aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+config: bcm2712_defconfig + android_rpi5.config
+sha256:
+1929d881411ac86581fc7c5a87e4b085b0f123ef82321f4853c691e3d15b0d8e  Image.gz
+699a418cd7067788c944a25628eeb1e49152c052bf404afad257fb46c39e90bc  bcm2712-rpi-5-b.dtb
+400b2da08abb8fd0ffd65085d1e0e1e6c6d01cadd27385403ea3a3fd5a1537f4  bcm2712-rpi-500.dtb
+641883b157d9c9596dc77a0da8d677b0e703c85866fcb53dc04da059c171f0a3  bcm2712-rpi-cm5-cm4io.dtb
+1529fb5940ac96aad580d77e3258913841f32a750906974b8ee434ddb05d6a1e  bcm2712-rpi-cm5-cm5io.dtb
+1b8ccaefc6e71bae7a1ad3074947b5ff11eaaedfcfccb140352d3aaae81786ed  bcm2712-rpi-cm5l-cm4io.dtb
+5c3d9f10ce8770d66f0e1f8a591ed7aae8f4378e1daefa783589a2acb6b2dbd0  bcm2712-rpi-cm5l-cm5io.dtb
+d8d630e01d28f7d98c8775a613ea9f795d70a96619bcd9cf4152577e983b4b4d  bcm2712d0-rpi-5-b.dtb
