@@ -1,0 +1,19 @@
+# Kernel modules shipped on the vendor partition, one module name per line.
+# The vendor init script loads them with modprobe, which resolves the
+# dependencies recorded in modules.dep.
+
+# Wi-Fi (CYW43455 on SDIO). brcmfmac asks for its firmware vendor module at
+# probe time, but Android disables kernel module autoloading, so brcmfmac-wcc
+# is shipped and loaded before the SDIO card is probed.
+rfkill
+cfg80211
+brcmutil
+brcmfmac
+brcmfmac-wcc
+
+# Bluetooth (CYW43455 on UART)
+ecc
+ecdh_generic
+bluetooth
+btbcm
+hci_uart

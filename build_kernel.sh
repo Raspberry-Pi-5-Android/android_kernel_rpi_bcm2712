@@ -8,9 +8,9 @@
 # Usage:
 #   KSRC=/path/to/raspberrypi-linux OUT=/path/to/build ./build_kernel.sh [--install]
 #
-# --install copies Image.gz, the board DTBs and the overlays into this directory
-# and rewrites BUILD_INFO. Modules are not built because Android on this device
-# loads none.
+# --install copies Image.gz, the board DTBs, the overlays and the modules named
+# in modules.list into this directory and rewrites BUILD_INFO. The vendor
+# partition ships only the listed modules and loads them with modprobe.
 set -euo pipefail
 
 KERNEL_URL=https://github.com/raspberrypi/linux.git
@@ -68,7 +68,7 @@ while IFS= read -r line; do
 done < "$HERE/android_rpi5.config"
 [ "$failed" = 0 ]
 
-make -C "$KSRC" O="$OUT" -j"$(nproc)" Image.gz dtbs
+make -C "$KSRC" O="$OUT" -j"$(nproc)" Image.gz dtbs modules
 
 if [ "${1:-}" = "--install" ]; then
   boot=$OUT/arch/arm64/boot
@@ -79,12 +79,23 @@ if [ "${1:-}" = "--install" ]; then
   rm -rf "$HERE/overlays"
   mkdir "$HERE/overlays"
   cp "$boot"/dts/overlays/*.dtbo "$boot/dts/overlays/overlay_map.dtb" "$HERE/overlays/"
+  rm -rf "$HERE/modules"
+  mkdir "$HERE/modules"
+  while IFS= read -r mod; do
+    case "$mod" in ""|"#"*) continue ;; esac
+    found=$(find "$OUT" -name "$mod.ko")
+    if [ "$(printf '%s\n' "$found" | grep -c .)" != 1 ]; then
+      echo "error: expected exactly one $mod.ko, found: $found" >&2
+      exit 1
+    fi
+    cp "$found" "$HERE/modules/"
+  done < "$HERE/modules.list"
   {
     echo "source: $KERNEL_URL $KERNEL_BRANCH $KERNEL_COMMIT"
     echo "release: $(make -s -C "$KSRC" O="$OUT" kernelrelease)"
     echo "compiler: $("${CROSS_COMPILE}gcc" --version | head -1)"
     echo "config: bcm2712_defconfig + android_rpi5.config"
     echo "sha256:"
-    (cd "$HERE" && sha256sum Image.gz bcm2712*.dtb)
+    (cd "$HERE" && sha256sum Image.gz bcm2712*.dtb modules/*.ko)
   } > "$HERE/BUILD_INFO"
 fi
