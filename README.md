@@ -1,7 +1,6 @@
 # android_kernel_rpi_bcm2712
 
-Prebuilt Raspberry Pi kernel for AOSP Android on the Raspberry Pi 5 (BCM2712).
-Branch `android-15`: Linux 6.12.
+Prebuilt Raspberry Pi kernel for AOSP Android on the Raspberry Pi 5 (BCM2712) Linux 6.12.
 
 ## Contents
 
