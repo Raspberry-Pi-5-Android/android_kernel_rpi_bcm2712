@@ -9,7 +9,8 @@ Prebuilt Raspberry Pi kernel for AOSP Android on the Raspberry Pi 5 (BCM2712) Li
 | `Image.gz` | Kernel image |
 | `bcm2712*.dtb`, `overlays/` | Device trees and overlays |
 | `modules/`, `modules.list` | Wi-Fi and Bluetooth kernel modules |
-| `android_rpi5.config` | Android options added to `bcm2712_defconfig` |
+| `android-base.config` | AOSP Android kernel requirements (verbatim copy, source in `BUILD_INFO`) |
+| `android_rpi5.config` | Raspberry Pi 5 options |
 | `build_kernel.sh` | Rebuilds everything above from source |
 | `BUILD_INFO` | Source commit, compiler and checksums |
 

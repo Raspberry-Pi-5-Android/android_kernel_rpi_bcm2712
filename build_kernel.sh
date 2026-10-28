@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Build the Raspberry Pi 5 kernel used by this tree: the Raspberry Pi kernel
-# with bcm2712_defconfig plus the Android options in android_rpi5.config.
+# with bcm2712_defconfig, the AOSP android-base.config and the board options
+# in android_rpi5.config.
 #
 # Usage:
 #   KSRC=/path/to/raspberrypi-linux OUT=/path/to/build ./build_kernel.sh [--install]
@@ -16,6 +17,8 @@ set -euo pipefail
 KERNEL_URL=https://github.com/raspberrypi/linux.git
 KERNEL_BRANCH=rpi-6.12.y
 KERNEL_COMMIT=3163cc5b7c428294db03c4b19260e5c16c626d7a
+# android-base.config is a verbatim copy of this file.
+ANDROID_BASE_SOURCE="https://android.googlesource.com/kernel/configs f3ac1b9ecf5224b8d24371888e308fffae6207d7 v/android-6.6/android-base.config"
 
 HERE=$(cd "$(dirname "$0")" && pwd)
 : "${KSRC:?set KSRC to a raspberrypi/linux checkout}"
@@ -41,32 +44,39 @@ export KBUILD_BUILD_TIMESTAMP
 
 mkdir -p "$OUT"
 make -C "$KSRC" O="$OUT" bcm2712_defconfig
-"$KSRC/scripts/kconfig/merge_config.sh" -m -O "$OUT" "$OUT/.config" "$HERE/android_rpi5.config"
+"$KSRC/scripts/kconfig/merge_config.sh" -m -O "$OUT" "$OUT/.config" \
+  "$HERE/android-base.config" "$HERE/android_rpi5.config"
 make -C "$KSRC" O="$OUT" olddefconfig
 
-# Every option in the fragment must survive olddefconfig.
-failed=0
-while IFS= read -r line; do
-  [ -z "$line" ] && continue
-  case "$line" in
-    "# CONFIG_"*" is not set")
-      sym=${line#\# }
-      sym=${sym%% *}
-      if grep -q "^$sym=" "$OUT/.config"; then
-        echo "error: $sym should not be set" >&2
-        failed=1
-      fi
-      ;;
-    "#"*) ;;
-    *)
-      if ! grep -qxF "$line" "$OUT/.config"; then
-        echo "error: not applied: $line" >&2
-        failed=1
-      fi
-      ;;
-  esac
-done < "$HERE/android_rpi5.config"
-[ "$failed" = 0 ]
+# Print the options of a fragment that olddefconfig did not keep.
+unapplied() {
+  while IFS= read -r line; do
+    case "$line" in
+      "# CONFIG_"*" is not set")
+        sym=${line#\# }
+        sym=${sym%% *}
+        if grep -q "^$sym=" "$OUT/.config"; then
+          echo "$line"
+        fi
+        ;;
+      ""|"#"*) ;;
+      *)
+        grep -qxF "$line" "$OUT/.config" || echo "$line"
+        ;;
+    esac
+  done < "$1"
+}
+
+# Every board option must survive olddefconfig.
+missing=$(unapplied "$HERE/android_rpi5.config")
+if [ -n "$missing" ]; then
+  echo "error: options in android_rpi5.config not applied:" >&2
+  echo "$missing" >&2
+  exit 1
+fi
+# android-base.config is written for the Android Common Kernel and the LLVM
+# toolchain; the options this kernel does not provide are listed in BUILD_INFO.
+base_missing=$(unapplied "$HERE/android-base.config")
 
 make -C "$KSRC" O="$OUT" -j"$(nproc)" Image.gz dtbs modules
 
@@ -94,7 +104,10 @@ if [ "${1:-}" = "--install" ]; then
     echo "source: $KERNEL_URL $KERNEL_BRANCH $KERNEL_COMMIT"
     echo "release: $(make -s -C "$KSRC" O="$OUT" kernelrelease)"
     echo "compiler: $("${CROSS_COMPILE}gcc" --version | head -1)"
-    echo "config: bcm2712_defconfig + android_rpi5.config"
+    echo "config: bcm2712_defconfig + android-base.config + android_rpi5.config"
+    echo "android-base.config: $ANDROID_BASE_SOURCE"
+    echo "android-base.config options not provided by this kernel:"
+    printf '%s\n' "$base_missing" | sed 's/^/  /'
     echo "sha256:"
     (cd "$HERE" && sha256sum Image.gz bcm2712*.dtb modules/*.ko)
   } > "$HERE/BUILD_INFO"

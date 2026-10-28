@@ -1,9 +1,21 @@
 source: https://github.com/raspberrypi/linux.git rpi-6.12.y 3163cc5b7c428294db03c4b19260e5c16c626d7a
 release: 6.12.113-v8-4k+
 compiler: aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
-config: bcm2712_defconfig + android_rpi5.config
+config: bcm2712_defconfig + android-base.config + android_rpi5.config
+android-base.config: https://android.googlesource.com/kernel/configs f3ac1b9ecf5224b8d24371888e308fffae6207d7 v/android-6.6/android-base.config
+android-base.config options not provided by this kernel:
+  CONFIG_ASHMEM=y
+  CONFIG_AS_IS_LLVM=y
+  CONFIG_CC_IS_CLANG=y
+  CONFIG_CPU_FREQ_TIMES=y
+  CONFIG_DM_DEFAULT_KEY=y
+  CONFIG_LD_IS_LLD=y
+  CONFIG_NETFILTER_XT_MATCH_QUOTA2=y
+  CONFIG_NETFILTER_XT_MATCH_QUOTA2_LOG=y
+  CONFIG_TRACE_GPU_MEM=y
+  CONFIG_UID_SYS_STATS=y
 sha256:
-1929d881411ac86581fc7c5a87e4b085b0f123ef82321f4853c691e3d15b0d8e  Image.gz
+86a58f57f07a4abaae0dd462b3bc4a08b12b3367989510b3a61e724bdb64eef2  Image.gz
 699a418cd7067788c944a25628eeb1e49152c052bf404afad257fb46c39e90bc  bcm2712-rpi-5-b.dtb
 400b2da08abb8fd0ffd65085d1e0e1e6c6d01cadd27385403ea3a3fd5a1537f4  bcm2712-rpi-500.dtb
 641883b157d9c9596dc77a0da8d677b0e703c85866fcb53dc04da059c171f0a3  bcm2712-rpi-cm5-cm4io.dtb
@@ -11,13 +23,13 @@ sha256:
 1b8ccaefc6e71bae7a1ad3074947b5ff11eaaedfcfccb140352d3aaae81786ed  bcm2712-rpi-cm5l-cm4io.dtb
 5c3d9f10ce8770d66f0e1f8a591ed7aae8f4378e1daefa783589a2acb6b2dbd0  bcm2712-rpi-cm5l-cm5io.dtb
 d8d630e01d28f7d98c8775a613ea9f795d70a96619bcd9cf4152577e983b4b4d  bcm2712d0-rpi-5-b.dtb
-d5310a0513ecaea19c35ec36b1d7c31a0c5deb0edab7d738127533138fa83066  modules/bluetooth.ko
-2689aef72e0c1daf833ad238b2506b2b2c8bb855a122551266ed459bf08d6891  modules/brcmfmac-wcc.ko
-c28b52af2fc3b6e6e541e93053579bf591f935d801018700a730e462bb3c1a41  modules/brcmfmac.ko
-bb7c20b0eec332677baefccfd30eeb3f64fca9713a9122140226ea4d236d9246  modules/brcmutil.ko
-7d6b34ef4c2e8c257eec92b24a678a5bb7080a62ebf908a1e649a460f1577108  modules/btbcm.ko
-d612d95f12d856a943a4701ab0b333466acba40577d16cd34b43e986a3b76ae5  modules/cfg80211.ko
-e5e37675470168fe62e4a44e35f29362fe6d3d83b0c3e80783e0efbacd3fb8cf  modules/ecc.ko
-27aab27e0dec2fb4f74d8f934bea52c3666535972c5607a93ba8e90d5aaff260  modules/ecdh_generic.ko
-607bb8a4aa04be078b9ea62725e5e23ca09712b244e0a2e83637f59e939e504f  modules/hci_uart.ko
-1482f92be5a4f1b233dce1eb5ef4e5cc19afd8724c7b7d7565397ec448219e07  modules/rfkill.ko
+94fba0fdc09ec67e5d5dfb184b1f3cabd80a8bff51c3687091e57a8a8517612a  modules/bluetooth.ko
+8ecf352da9575cf0698873080f99c82cebd5f097bca35c70f82e2efe06f1db0e  modules/brcmfmac-wcc.ko
+e6e9a771e9957cd51db7b8b74eea05d1cb67162d3d0678ed8ee9e85a707a8ab8  modules/brcmfmac.ko
+5011766df4d833e0ab7e42d555c9a6c97784a91c886e597eec1ecd3c72e485f8  modules/brcmutil.ko
+a9acfe9bf8a3f81ce82b73438720f7e46b63a1147e2dc79d4390d7a25cfb5122  modules/btbcm.ko
+2c0094d4ff36240212d7380d5ef34869f02168331f3276b7248eddad023f0d86  modules/cfg80211.ko
+138ebb40d88eb63380a6074c1535f5858141aaa22da59b02066e0856df0a2588  modules/ecc.ko
+65633da0d43d8751ab0fea39c216acd8a9ca2ebfe383e97971b61b6da678c7c3  modules/ecdh_generic.ko
+455a41c25a6ed13ab7b66c8b7cbb85b5f8a8b765ffe4ae7b6504cf46f7e94e4d  modules/hci_uart.ko
+eb1a54ffa954c9638b42f8ff160b0c8368ac86f716139307f0fc5cd38a07d0c4  modules/rfkill.ko
